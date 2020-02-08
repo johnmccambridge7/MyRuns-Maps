@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".GPSActivity">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/avgSpeed2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#99FFFFFF"
+                    android:padding="10dp"
+                    android:text="Avg. Speed: 5.03 m/h" />
+
+                <TextView
+                    android:id="@+id/currentSpeed2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#99FFFFFF"
+                    android:padding="10dp"
+                    android:text="Curr. Speed: 2.80 m/h" />
+
+                <TextView
+                    android:id="@+id/distance2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#99FFFFFF"
+                    android:padding="10dp"
+                    android:text="Distance: 0.03 Miles" />
+
+                <TextView
+                    android:id="@+id/activityType2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#99FFFFFF"
+                    android:padding="10dp"
+                    android:text="Type: Running" />
+
+                <TextView
+                    android:id="@+id/climb2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#99FFFFFF"
+                    android:padding="10dp"
+                    android:text="Climb: 0.09 miles" />
+
+            </LinearLayout>
+        </fragment>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="94dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/save" />
+
+        <Button
+            android:id="@+id/button8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/crop__cancel" />
+    </LinearLayout>
+
+</LinearLayout>

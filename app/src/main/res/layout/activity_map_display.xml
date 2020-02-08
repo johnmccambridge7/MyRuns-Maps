@@ -66,6 +66,7 @@
                 android:layout_weight="1"
                 android:onClick="cancel"
                 android:text="@android:string/cancel" />
+
         </LinearLayout>
     </LinearLayout>
 

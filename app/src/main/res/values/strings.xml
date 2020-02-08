@@ -51,5 +51,6 @@
         <item>Take picture from camera.</item>
         <item>Select from gallery.</item>
     </string-array>
+    <string name="title_activity_gps">Map</string>
 
 </resources>

@@ -98,11 +98,11 @@ public class Start extends Fragment {
                 startActivity(i);
                 break;
             case GPS:
-                i = new Intent(getActivity(), MapDisplayActivity.class);
+                i = new Intent(getActivity(), GPSActivity.class);
                 startActivity(i);
                 break;
             case AUTOMATIC:
-                i = new Intent(getActivity(), MapDisplayActivity.class);
+                i = new Intent(getActivity(), GPSActivity.class);
                 startActivity(i);
                 break;
         }
