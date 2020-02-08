@@ -3,6 +3,7 @@ package com.example.myruns;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,7 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GPSActivity extends FragmentActivity implements OnMapReadyCallback {
-
+    
     private GoogleMap mMap;
 
     @Override
@@ -25,6 +26,9 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         mapFragment.getMapAsync(this);
     }
 
+    public void cancel(View view) {
+        finish();
+    }
 
     /**
      * Manipulates the map once available.
