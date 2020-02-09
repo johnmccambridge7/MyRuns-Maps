@@ -37,6 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+// todo:
+// 1. add background support.
+// 2. write information to database.
+// 3. model to draw speed and other metrics etc.
+// est time 6 hours
+
 public class GPSActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
