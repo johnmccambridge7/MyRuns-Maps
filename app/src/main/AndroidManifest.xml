@@ -38,7 +38,11 @@
 
         <activity
             android:name=".GPSActivity"
-            android:label="@string/title_activity_gps"></activity>
+            android:label="@string/title_activity_gps">
+            <intent-filter>
+                <action android:name="com.example.action.NEW_LOCATION" />
+            </intent-filter>
+        </activity>
         <activity android:name=".EditProfileActivity">
             <intent-filter>
                 <action android:name="editProfile" />
@@ -52,7 +56,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -67,6 +70,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <service android:name=".LocationService"/>
     </application>
 
 </manifest>

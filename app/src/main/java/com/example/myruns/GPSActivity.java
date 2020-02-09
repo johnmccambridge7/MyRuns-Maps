@@ -3,22 +3,16 @@ package com.example.myruns;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Point;
-import android.location.Address;
-import android.location.Criteria;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,13 +23,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 // todo:
 // 1. add background support.
@@ -43,37 +33,82 @@ import java.util.Locale;
 // 3. model to draw speed and other metrics etc.
 // est time 6 hours
 
+/*
+System Design for Service:
+
+1. Notify user when service begins (on tap open up activity).
+2. Service in the background periodically pings GPSActivity and updates location.
+3. Broadcast new location to GPSActivity.
+
+ */
+
 public class GPSActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     public Marker currentPin;
-    private LocationManager locationManager;
+    public LatLng currentCoord;
+    public LatLng startingCoord;
+    //private LocationManager locationManager;
     private ArrayList<LatLng> polygon;
+    private LocationReceiver locationReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gps);
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        polygon = new ArrayList<LatLng>();
+        // start the service for getting location
+        Intent intent = new Intent(this, LocationService.class);
+        startService(intent);
 
+        //locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        polygon = new ArrayList<LatLng>();
+        locationReceiver = new LocationReceiver();
+        currentCoord = new LatLng(0,0);
+
+        // SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        IntentFilter filter = new IntentFilter(LocationService.ACTION_NEW_LOCATION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(locationReceiver, filter);
+
         if(savedInstanceState != null) {
             polygon = savedInstanceState.getParcelableArrayList("points");
+
+            double lat = savedInstanceState.getDouble("lat");
+            double lng = savedInstanceState.getDouble("long");
+
+            LatLng current = new LatLng(lat, lng);
+
+            // add current marker
+            addMarker(current);
         }
     }
 
     public void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
         bundle.putParcelableArrayList("points", this.polygon);
+        bundle.putDouble("lat", currentCoord.latitude);
+        bundle.putDouble("long", currentCoord.longitude);
+
+        if(startingCoord != null) {
+            bundle.putDouble("startingLat", startingCoord.latitude);
+            bundle.putDouble("startingLong", startingCoord.longitude);
+        }
     }
 
     public void cancel(View view) {
+        Intent i = new Intent();
+        i.setAction(LocationService.STOP_SERVICE_ACTION);
         finish();
+    }
+
+    public Marker addMarker(LatLng point) {
+        MarkerOptions options = new MarkerOptions();
+        options.position(point);
+        return mMap.addMarker(options);
     }
 
     /*
@@ -88,10 +123,13 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        refreshMap();
+
         if(!checkPermission())
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        else
-            refreshLocationOnMap();
+        //else
+        //    refreshLocationOnMap();
     }
 
     //******** Check run time permission for locationManager. This is for v23+  ********
@@ -104,12 +142,57 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     }
     //****** Check run time permission ************
 
-    // converts the location into the lat long coord
-    private LatLng fromLocationToLatLng(Location location) {
-        return new LatLng(location.getLatitude(), location.getLongitude());
+    public void refreshMap() {
+        if (currentPin != null)
+            currentPin.remove();
+
+        PolylineOptions polylineCoords = new PolylineOptions();
+
+        for(LatLng point : polygon) {
+            polylineCoords.add(point);
+        }
+
+        mMap.addPolyline(polylineCoords);
+
+        if(currentCoord.latitude == 0 && currentCoord.longitude == 0) {
+            return;
+        }
+
+        currentPin = addMarker(currentCoord);
     }
 
-    private void updateWithNewLocation(Location location) {
+    public class LocationReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            double lng = intent.getExtras().getDouble("long", -10.0);
+            double lat = intent.getExtras().getDouble("lat", -10.0);
+
+            currentCoord = new LatLng(lat, lng);
+            polygon.add(currentCoord);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentCoord, 17));
+
+            if(startingCoord == null) {
+                startingCoord = new LatLng(lat, lng);
+                addMarker(startingCoord);
+            }
+
+            refreshMap();
+
+            /*mMap.addMarker(
+                    new MarkerOptions().position(coordinate).icon(BitmapDescriptorFactory.defaultMarker(
+                            BitmapDescriptorFactory.HUE_GREEN)).title("Current Location.")
+            );*/
+
+            message("Received: " + String.valueOf(lng) + " " + String.valueOf(lat));
+        }
+    }
+
+    // converts the location into the lat long coord
+    /*private LatLng fromLocationToLatLng(Location location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }*/
+
+    /*private void updateWithNewLocation(Location location) {
         if (location != null) {
             LatLng coordinate = fromLocationToLatLng(location);
 
@@ -160,17 +243,17 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
                 }
             }
         }
-    }
+    }*/
 
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            refreshLocationOnMap();
+            // refreshLocationOnMap();
         } else {
             finish();
         }
     }
 
-    private final LocationListener locationListener = new LocationListener() {
+    /*private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             updateWithNewLocation(location);
         }
@@ -183,9 +266,9 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
 
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
-    };
+    };*/
 
-    private void refreshLocationOnMap() {
+    /*private void refreshLocationOnMap() {
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -213,7 +296,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         }
 
         locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
-    }
+    }*/
 
     public void message(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
