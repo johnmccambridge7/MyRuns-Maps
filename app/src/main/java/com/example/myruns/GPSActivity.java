@@ -3,6 +3,8 @@ package com.example.myruns;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.OnLifecycleEvent;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
@@ -39,6 +41,7 @@ System Design for Service:
 1. Notify user when service begins (on tap open up activity).
 2. Service in the background periodically pings GPSActivity and updates location.
 3. Broadcast new location to GPSActivity.
+4. Click on Notification in user bar to open activity.
 
  */
 
@@ -46,6 +49,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
 
     private GoogleMap mMap;
     public Marker currentPin;
+    public Marker startingPin;
     public LatLng currentCoord;
     public LatLng startingCoord;
     //private LocationManager locationManager;
@@ -64,7 +68,9 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         //locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         polygon = new ArrayList<LatLng>();
         locationReceiver = new LocationReceiver();
+
         currentCoord = new LatLng(0,0);
+        startingCoord = new LatLng(0, 0);
 
         // SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -80,11 +86,18 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             double lat = savedInstanceState.getDouble("lat");
             double lng = savedInstanceState.getDouble("long");
 
-            LatLng current = new LatLng(lat, lng);
+            currentCoord = new LatLng(lat, lng);
 
-            // add current marker
-            addMarker(current);
+            double savedLat = savedInstanceState.getDouble("startingLat");
+            double savedLong = savedInstanceState.getDouble("startingLong");
+
+            startingCoord = new LatLng(savedLat, savedLong);
         }
+    }
+
+    public void onResume() {
+        super.onResume();
+        message(String.valueOf(this.polygon.size()));
     }
 
     public void onSaveInstanceState(Bundle bundle) {
@@ -92,11 +105,8 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         bundle.putParcelableArrayList("points", this.polygon);
         bundle.putDouble("lat", currentCoord.latitude);
         bundle.putDouble("long", currentCoord.longitude);
-
-        if(startingCoord != null) {
-            bundle.putDouble("startingLat", startingCoord.latitude);
-            bundle.putDouble("startingLong", startingCoord.longitude);
-        }
+        bundle.putDouble("startingLat", startingCoord.latitude);
+        bundle.putDouble("startingLong", startingCoord.longitude);
     }
 
     public void cancel(View view) {
@@ -105,9 +115,17 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         finish();
     }
 
-    public Marker addMarker(LatLng point) {
+    public Marker addMarker(LatLng point, boolean isStartingPoint) {
         MarkerOptions options = new MarkerOptions();
         options.position(point);
+
+        if(isStartingPoint) {
+            options.icon(
+                    BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_GREEN)
+            );
+        }
+
         return mMap.addMarker(options);
     }
 
@@ -124,12 +142,11 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        refreshMap();
-
-        if(!checkPermission())
+        if(!checkPermission()) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        //else
-        //    refreshLocationOnMap();
+        } else {
+            refreshMap();
+        }
     }
 
     //******** Check run time permission for locationManager. This is for v23+  ********
@@ -158,7 +175,8 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             return;
         }
 
-        currentPin = addMarker(currentCoord);
+        startingPin = addMarker(startingCoord, true);
+        currentPin = addMarker(currentCoord, false);
     }
 
     public class LocationReceiver extends BroadcastReceiver {
@@ -168,135 +186,27 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             double lat = intent.getExtras().getDouble("lat", -10.0);
 
             currentCoord = new LatLng(lat, lng);
-            polygon.add(currentCoord);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentCoord, 17));
 
-            if(startingCoord == null) {
+            polygon.add(currentCoord);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentCoord, 100));
+
+            if(startingCoord.latitude == 0 && startingCoord.longitude == 0) {
                 startingCoord = new LatLng(lat, lng);
-                addMarker(startingCoord);
             }
 
+            // refresh map once the locatio
             refreshMap();
-
-            /*mMap.addMarker(
-                    new MarkerOptions().position(coordinate).icon(BitmapDescriptorFactory.defaultMarker(
-                            BitmapDescriptorFactory.HUE_GREEN)).title("Current Location.")
-            );*/
-
-            message("Received: " + String.valueOf(lng) + " " + String.valueOf(lat));
         }
     }
 
-    // converts the location into the lat long coord
-    /*private LatLng fromLocationToLatLng(Location location) {
-        return new LatLng(location.getLatitude(), location.getLongitude());
-    }*/
-
-    /*private void updateWithNewLocation(Location location) {
-        if (location != null) {
-            LatLng coordinate = fromLocationToLatLng(location);
-
-            this.polygon.add(coordinate);
-
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 17));
-
-            if (currentPin != null)
-                currentPin.remove();
-
-            PolylineOptions polylineCoords = new PolylineOptions();
-
-            for(LatLng point : this.polygon) {
-                polylineCoords.add(point);
-            }
-
-            mMap.addPolyline(polylineCoords);
-
-            //this.polygon.add(new MarkerOptions().position(coordinate).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-            currentPin = mMap.addMarker(
-                    new MarkerOptions().position(coordinate).icon(BitmapDescriptorFactory.defaultMarker(
-                            BitmapDescriptorFactory.HUE_GREEN)).title("Current Location.")
-            );
-
-            if (!Geocoder.isPresent()) {
-                Toast.makeText(getApplicationContext(), "No geocoder available", Toast.LENGTH_LONG).show();
-            } else {
-                try {
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-
-                    Geocoder gc = new Geocoder(this, Locale.getDefault());
-
-                    List<Address> addresses = gc.getFromLocation(latitude, longitude, 1);
-                    StringBuilder sb = new StringBuilder();
-                    if (addresses.size() > 0) {
-                        Address address = addresses.get(0);
-
-                        for (int i = 0; i < address.getMaxAddressLineIndex(); i++)
-                            sb.append(address.getAddressLine(i)).append("\n");
-
-                        sb.append(address.getLocality()).append("\n");
-                        sb.append(address.getPostalCode()).append("\n");
-                        sb.append(address.getCountryName());
-                    }
-                } catch (IOException e) {
-                    Log.d("johnmacdonald", "IO Exception", e);
-                }
-            }
-        }
-    }*/
-
+    // TEST ON DEVICE W.O PERMISSIONS
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // refreshLocationOnMap();
+            refreshMap();
         } else {
             finish();
         }
     }
-
-    /*private final LocationListener locationListener = new LocationListener() {
-        public void onLocationChanged(Location location) {
-            updateWithNewLocation(location);
-        }
-
-        public void onProviderDisabled(String provider) {
-        }
-
-        public void onProviderEnabled(String provider) {
-        }
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-    };*/
-
-    /*private void refreshLocationOnMap() {
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        criteria.setAltitudeRequired(false);
-        criteria.setBearingRequired(false);
-        criteria.setSpeedRequired(false);
-        criteria.setCostAllowed(true);
-        String provider = locationManager.getBestProvider(criteria, true);
-
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        Location l = locationManager.getLastKnownLocation(provider);
-
-        if(l != null) {
-            LatLng latlng = fromLocationToLatLng(l);
-
-            currentPin = mMap.addMarker(
-                    new MarkerOptions().position(latlng).icon(BitmapDescriptorFactory.defaultMarker(
-                            BitmapDescriptorFactory.HUE_GREEN)));
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17)); //17: the desired zoom level, in the range of 2.0 to 21.0
-            updateWithNewLocation(l);
-        }
-
-        locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
-    }*/
 
     public void message(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();

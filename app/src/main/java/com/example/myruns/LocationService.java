@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -44,6 +45,7 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -158,12 +160,19 @@ public class LocationService extends Service {
     }
 
     public void sendTrackingNotification() {
+        Intent launchGPSActivity = new Intent(getApplicationContext(), GPSActivity.class);
+        launchGPSActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                0, launchGPSActivity, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
-        notificationBuilder.setContentTitle("title");
-        notificationBuilder.setContentText("content");
+        notificationBuilder.setContentTitle("MyRuns - John MacDonald");
+        notificationBuilder.setContentText("We are currently tracking your location.");
+        notificationBuilder.setContentIntent(pendingIntent);
         notificationBuilder.setSmallIcon(R.drawable.common_google_signin_btn_icon_dark);
+
         Notification notification = notificationBuilder.build();
-        notification.flags |= Notification.FLAG_AUTO_CANCEL; // or builder.setAutoCancel(true);
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
 
         if(Build.VERSION.SDK_INT > 26) {
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "channel name",
