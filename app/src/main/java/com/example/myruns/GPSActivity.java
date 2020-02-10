@@ -13,8 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,21 +29,23 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 // todo:
-// 1. add background support.
+// 1. add background support. - DONE
 // 2. write information to database.
-// 3. model to draw speed and other metrics etc.
+// 3. model to draw speed and other metrics etc. (make sure to use preferences)
 // est time 6 hours
 
 /*
 System Design for Service:
 
-1. Notify user when service begins (on tap open up activity).
-2. Service in the background periodically pings GPSActivity and updates location.
-3. Broadcast new location to GPSActivity.
-4. Click on Notification in user bar to open activity.
+1. Notify user when service begins (on tap open up activity). - DONE
+2. Service in the background periodically pings GPSActivity and updates location. - DONE
+3. Broadcast new location to GPSActivity. - DONE
+4. Click on Notification in user bar to open activity. - DONE
 
  */
 
@@ -52,14 +56,26 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     public Marker startingPin;
     public LatLng currentCoord;
     public LatLng startingCoord;
-    //private LocationManager locationManager;
     private ArrayList<LatLng> polygon;
     private LocationReceiver locationReceiver;
+    private double distanceTravelled = 0.0;
+
+    TextView avgSpeed;
+    TextView currentSpeed;
+    TextView distance;
+    TextView activityType;
+    TextView climb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gps);
+
+        avgSpeed = (TextView) findViewById(R.id.avgSpeed);
+        currentSpeed = (TextView) findViewById(R.id.currentSpeed);
+        distance = (TextView) findViewById(R.id.distance);
+        activityType = (TextView) findViewById(R.id.activityType);
+        climb = (TextView) findViewById(R.id.climb);
 
         // start the service for getting location
         Intent intent = new Intent(this, LocationService.class);
@@ -92,12 +108,12 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             double savedLong = savedInstanceState.getDouble("startingLong");
 
             startingCoord = new LatLng(savedLat, savedLong);
-        }
-    }
 
-    public void onResume() {
-        super.onResume();
-        message(String.valueOf(this.polygon.size()));
+            double distanceTravelled = savedInstanceState.getDouble("distanceTravelled");
+
+            String distString = "Distance: " + String.valueOf(distanceTravelled) + " m";
+            distance.setText(distString);
+        }
     }
 
     public void onSaveInstanceState(Bundle bundle) {
@@ -107,11 +123,14 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         bundle.putDouble("long", currentCoord.longitude);
         bundle.putDouble("startingLat", startingCoord.latitude);
         bundle.putDouble("startingLong", startingCoord.longitude);
+        bundle.putDouble("distanceTravelled", distanceTravelled);
     }
 
     public void cancel(View view) {
         Intent i = new Intent();
         i.setAction(LocationService.STOP_SERVICE_ACTION);
+        sendBroadcast(i);
+
         finish();
     }
 
@@ -185,6 +204,23 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             double lng = intent.getExtras().getDouble("long", -10.0);
             double lat = intent.getExtras().getDouble("lat", -10.0);
 
+            float speed = intent.getExtras().getFloat("speed");
+            double altitude = intent.getExtras().getDouble("altitude");
+
+            if(polygon.size() > 0) {
+                LatLng previous = polygon.get(polygon.size() - 1);
+                float[] results = new float[3];
+                Location.distanceBetween(currentCoord.latitude, currentCoord.longitude, previous.latitude, previous.longitude, results);
+
+                distanceTravelled += results[0];
+            }
+
+            String altString = "Climb: " + String.valueOf(altitude);
+            climb.setText(altString);
+
+            String distString = "Distance: " + String.valueOf(distanceTravelled) + " m";
+            distance.setText(distString);
+
             currentCoord = new LatLng(lat, lng);
 
             polygon.add(currentCoord);
@@ -194,7 +230,6 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
                 startingCoord = new LatLng(lat, lng);
             }
 
-            // refresh map once the locatio
             refreshMap();
         }
     }

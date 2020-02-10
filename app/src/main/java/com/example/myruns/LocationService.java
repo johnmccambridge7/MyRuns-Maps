@@ -38,7 +38,9 @@ public class LocationService extends Service {
     public static final String STOP_SERVICE_ACTION = "stop service action";
     public static final String ACTION_NEW_LOCATION = "com.example.action.NEW_LOCATION";
 
-    LocationBroadcastReceiver receiver;
+    private double distanceTravelled = 0.0;
+
+    ServiceBroadcastReceiver receiver;
     NotificationManager notificationManager;
     LocationManager locationManager;
 
@@ -52,7 +54,7 @@ public class LocationService extends Service {
         sendTrackingNotification();
         refreshLocationOnMap();
 
-        receiver = new LocationBroadcastReceiver();
+        receiver = new ServiceBroadcastReceiver();
 
         // called when cancel button is pressed
         IntentFilter filter = new IntentFilter();
@@ -75,6 +77,8 @@ public class LocationService extends Service {
 
             intent.putExtra("long", coordinate.longitude);
             intent.putExtra("lat", coordinate.latitude);
+            intent.putExtra("speed", location.getSpeed());
+            intent.putExtra("altitude", location.getAltitude());
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
@@ -142,7 +146,7 @@ public class LocationService extends Service {
             updateWithNewLocation(l);
         }
 
-        locationManager.requestLocationUpdates(provider, 1000, 0, locationListener);
+        locationManager.requestLocationUpdates(provider, 10, 0, locationListener);
     }
 
     public void message(String msg) {
@@ -183,10 +187,12 @@ public class LocationService extends Service {
         notificationManager.notify(NOTIFY_ID, notification);
     }
 
-    public class LocationBroadcastReceiver extends BroadcastReceiver {
+    public class ServiceBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("johnmacdonald", "# received");
+            stopSelf();
+            notificationManager.cancel(NOTIFY_ID);
+            unregisterReceiver(receiver);
         }
     }
 }
