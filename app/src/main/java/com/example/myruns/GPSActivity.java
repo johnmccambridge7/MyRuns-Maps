@@ -174,24 +174,36 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             double savedLat = savedInstanceState.getDouble("startingLat", 0.0);
             double savedLong = savedInstanceState.getDouble("startingLong", 0.0);
             startingCoord = new LatLng(savedLat, savedLong);
+            startingHeight = savedInstanceState.getDouble("startingHeight");
 
             double distanceTravelled = getDistanceTravelled();
-            String distString = "Distance: " + String.valueOf(distanceTravelled) + " m";
+            double distanceClimbed = getTotalClimb(startingHeight);
+            String suffix = "kilometers";
+
+            if(units.equals("imperial")) {
+                distanceClimbed /= 1609.0;
+                distanceTravelled /= 1609.0;
+                suffix = "miles";
+            } else {
+                distanceClimbed /= 1000.0;
+                distanceTravelled /= 1000.0;
+            }
+
+            String distString = "Distance: " + String.valueOf(distanceTravelled) + " " + suffix;
             distance.setText(distString);
 
-            startingHeight = savedInstanceState.getDouble("startingHeight");
-            String altString = "Climb: " + String.valueOf(getTotalClimb(startingHeight)) + " m";
+            String altString = "Climb: " + String.valueOf(distanceClimbed) + " " + suffix;
             climb.setText(altString);
 
             String activity = "Type: " + savedInstanceState.getString("activity");
             activityType.setText(activity);
 
             avgSpeedValue = savedInstanceState.getDouble("averageSpeed");
-            String avgSpeedData = "Avg Speed: " + String.valueOf(avgSpeedValue) + " m/h";
+            String avgSpeedData = "Avg Speed: " + String.valueOf(avgSpeedValue / 60) + " " + suffix + "/h";
             avgSpeed.setText(avgSpeedData);
 
             currentSpeedValue = savedInstanceState.getDouble("currentSpeed");
-            String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue) + " m/h";
+            String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue / 60) + " " + suffix + "/h";
             currentSpeed.setText(currentSpeedData);
         }
     }

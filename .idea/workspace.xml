@@ -30,13 +30,6 @@
       <change beforePath="$PROJECT_DIR$/../ChatKit-master/sample/src/main/java/com/stfalcon/chatkit/sample/src/def/Store.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../ChatKit-master/sample/src/main/res/layout/activity_connection.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../DartDropApp/DartDrop" beforeDir="false" afterPath="$PROJECT_DIR$/../DartDropApp/DartDrop" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../SOLID/.idea/SOLID.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../SOLID/.idea/codeStyles/Project.xml" beforeDir="false" />
@@ -136,8 +129,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/myruns/LocationService.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-29">
-                  <caret line="129" column="53" selection-start-line="129" selection-start-column="53" selection-end-line="129" selection-end-column="53" />
+                <state relative-caret-position="153">
+                  <caret line="136" lean-forward="true" selection-start-line="136" selection-end-line="136" />
                   <folding>
                     <element signature="imports" expanded="true" />
                   </folding>
@@ -222,14 +215,14 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="255">
-                  <caret line="507" column="109" selection-start-line="507" selection-start-column="109" selection-end-line="507" selection-end-column="109" />
+                <state relative-caret-position="675">
+                  <caret line="206" column="51" lean-forward="true" selection-start-line="206" selection-start-column="51" selection-end-line="206" selection-end-column="51" />
                   <folding>
                     <element signature="imports" expanded="true" />
                     <element signature="method#cancel#0;class#GPSActivity#0" />
                     <element signature="method#deleteEntry#0;class#GPSActivity#0" />
-                    <element signature="e#11371#11762#0" expanded="true" />
-                    <element signature="e#11761#11762#0" expanded="true" />
+                    <element signature="e#11660#12051#0" expanded="true" />
+                    <element signature="e#12050#12051#0" expanded="true" />
                     <element signature="method#addMarker#0;class#GPSActivity#0" />
                     <element signature="method#checkPermission#0;class#GPSActivity#0" />
                     <element signature="method#onRequestPermissionsResult#0;class#GPSActivity#0" />
@@ -753,8 +746,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/myruns/LocationService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-29">
-          <caret line="129" column="53" selection-start-line="129" selection-start-column="53" selection-end-line="129" selection-end-column="53" />
+        <state relative-caret-position="153">
+          <caret line="136" lean-forward="true" selection-start-line="136" selection-end-line="136" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -763,14 +756,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="507" column="109" selection-start-line="507" selection-start-column="109" selection-end-line="507" selection-end-column="109" />
+        <state relative-caret-position="675">
+          <caret line="206" column="51" lean-forward="true" selection-start-line="206" selection-start-column="51" selection-end-line="206" selection-end-column="51" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#cancel#0;class#GPSActivity#0" />
             <element signature="method#deleteEntry#0;class#GPSActivity#0" />
-            <element signature="e#11371#11762#0" expanded="true" />
-            <element signature="e#11761#11762#0" expanded="true" />
+            <element signature="e#11660#12051#0" expanded="true" />
+            <element signature="e#12050#12051#0" expanded="true" />
             <element signature="method#addMarker#0;class#GPSActivity#0" />
             <element signature="method#checkPermission#0;class#GPSActivity#0" />
             <element signature="method#onRequestPermissionsResult#0;class#GPSActivity#0" />
