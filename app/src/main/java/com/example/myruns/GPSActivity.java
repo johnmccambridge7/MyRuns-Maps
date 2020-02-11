@@ -414,10 +414,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            // message(gpsData);
         }
-
 
         if(!checkPermission()) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -484,19 +481,31 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             timestamps.add(stamp);
             polygon.add(currentCoord);
 
-            String altString = "Climb: " + String.valueOf(getTotalClimb(startingHeight)) + " m";
+            double distanceClimbed = getTotalClimb(startingHeight); // in meters
+            double distanceTravelled = getDistanceTravelled(); // in meters
+
+            String suffix = "kilometers";
+
+            if(units.equals("imperial")) {
+                distanceClimbed /= 1609.0;
+                distanceTravelled /= 1609.0;
+                suffix = "miles";
+            } else {
+                distanceClimbed /= 1000.0;
+                distanceTravelled /= 1000.0;
+            }
+
+            String altString = "Climb: " + String.valueOf(distanceClimbed) + " " + suffix;
             climb.setText(altString);
 
-            double distanceTravelled = getDistanceTravelled();
-
-            String distString = "Distance: " + String.valueOf(distanceTravelled) + " m";
+            String distString = "Distance: " + String.valueOf(distanceTravelled) + " " + suffix;
             distance.setText(distString);
 
             avgSpeedValue = getAvgSpeed(distanceTravelled);
-            String avgSpeedData = "Avg Speed: " + String.valueOf(avgSpeedValue) + " m/h";
+            String avgSpeedData = "Avg Speed: " + String.valueOf(avgSpeedValue / 60) + " " + suffix + "/h";
             avgSpeed.setText(avgSpeedData);
 
-            String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue) + " m/h";
+            String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue / 60) + " " + suffix + "/h";
             currentSpeed.setText(currentSpeedData);
 
             if(mMap != null && currentCoord != null) {

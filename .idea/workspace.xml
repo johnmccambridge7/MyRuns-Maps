@@ -37,13 +37,7 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/EntryDataSource.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/EntryDataSource.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/ExerciseEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/ExerciseEntry.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/History.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/History.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/SQLiteHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/myruns/SQLiteHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_gps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_gps.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../SOLID/.idea/SOLID.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../SOLID/.idea/codeStyles/Project.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../SOLID/.idea/modules.xml" beforeDir="false" />
@@ -228,8 +222,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="432">
-                  <caret line="460" column="56" selection-start-line="460" selection-start-column="56" selection-end-line="460" selection-end-column="56" />
+                <state relative-caret-position="255">
+                  <caret line="507" column="109" selection-start-line="507" selection-start-column="109" selection-end-line="507" selection-end-column="109" />
                   <folding>
                     <element signature="imports" expanded="true" />
                     <element signature="method#cancel#0;class#GPSActivity#0" />
@@ -291,12 +285,10 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>HistoryListAd</find>
       <find>message</find>
       <find>intentDa</find>
       <find>climb</find>
       <find>Miles</find>
-      <find>m</find>
       <find>/ 1000</find>
       <find>setClimb</find>
       <find>units</find>
@@ -321,6 +313,8 @@
       <find />
       <find>currentSpeedValue</find>
       <find>refresh</find>
+      <find>m</find>
+      <find>formatted</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -528,7 +522,7 @@
       <window_info id="Resources Explorer" order="7" />
       <window_info id="Capture Tool" order="8" />
       <window_info anchor="bottom" id="Run" order="0" sideWeight="0.49946466" weight="0.32769555" />
-      <window_info active="true" anchor="bottom" id="Logcat" order="1" sideWeight="0.49946466" visible="true" weight="0.26121077" />
+      <window_info anchor="bottom" id="Logcat" order="1" sideWeight="0.49946466" weight="0.26121077" />
       <window_info anchor="bottom" id="TODO" order="2" weight="0.32875264" />
       <window_info anchor="bottom" id="Debug" order="3" />
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.32875264" />
@@ -769,8 +763,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/myruns/GPSActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="460" column="56" selection-start-line="460" selection-start-column="56" selection-end-line="460" selection-end-column="56" />
+        <state relative-caret-position="255">
+          <caret line="507" column="109" selection-start-line="507" selection-start-column="109" selection-end-line="507" selection-end-column="109" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#cancel#0;class#GPSActivity#0" />
