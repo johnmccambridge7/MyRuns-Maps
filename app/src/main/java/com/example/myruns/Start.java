@@ -85,20 +85,20 @@ public class Start extends Fragment {
 
     private void transition() {
         Intent i;
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        this.unit = sharedPref.getString("unit", "metric");
 
         switch(this.selectedAction) {
             case MANUAL_INPUT:
                 i = new Intent(getActivity(), ManualEntryActivity.class);
                 i.putExtra("activityType", this.selectedActivity);
-
-                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                this.unit = sharedPref.getString("unit", "metriccc");
-
                 i.putExtra("units", this.unit);
                 startActivity(i);
                 break;
             case GPS:
                 i = new Intent(getActivity(), GPSActivity.class);
+                i.putExtra("activityType", this.selectedActivity);
+                i.putExtra("units", this.unit);
                 startActivity(i);
                 break;
             case AUTOMATIC:
