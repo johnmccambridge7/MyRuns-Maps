@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -66,25 +67,36 @@ public class History extends Fragment {
         this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity(), HistoryEntryActivity.class);
+                Class activity = HistoryEntryActivity.class;
                 ExerciseEntry entry = entries.get(i);
-
                 String entryType = "Manual Entry";
 
                 if(entry.getInputType() == 2) {
+                    activity = GPSActivity.class;
                     entryType = "GPS";
                 }
 
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+                // get the stored unit - default metric
+                String storedUnit = sharedPref.getString("unit", "metric");
+
+                Intent intent = new Intent(getActivity(), activity);
+
+                intent.putExtra("units", storedUnit);
                 intent.putExtra("inputType", entryType);
                 intent.putExtra("activityType", entry.getActivityType());
                 intent.putExtra("date", entry.getDateTime());
                 intent.putExtra("duration", String.valueOf(entry.getDuration()) + " mins and 0 secs");
-                intent.putExtra("distance", String.valueOf(entry.getDistance()) + " Miles");
+                intent.putExtra("distance", entry.getDistance());
                 intent.putExtra("comment", entry.getComment());
                 intent.putExtra("calories", String.valueOf(entry.getCalorie()) + "cals");
                 intent.putExtra("heartRate", String.valueOf(entry.getHeartRate()) + " bpm");
                 intent.putExtra("entryID", String.valueOf(entry.getId()));
                 intent.putExtra("position", i);
+                intent.putExtra("startService", false);
+                intent.putExtra("climb", String.valueOf(entry.getClimb()));
+                intent.putExtra("gpsData", entry.getGpsData());
 
                 startActivity(intent);
             }

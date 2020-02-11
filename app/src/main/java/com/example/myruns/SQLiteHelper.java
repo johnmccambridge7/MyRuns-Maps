@@ -25,7 +25,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String UNITS = "units";
 
     private static final String DATABASE_NAME = "entries.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     private static final String DB_CREATION =
                      "CREATE TABLE IF NOT EXISTS " + ENTRIES_TABLE + " (\n" +

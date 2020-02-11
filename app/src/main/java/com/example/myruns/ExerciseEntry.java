@@ -7,13 +7,13 @@ public class ExerciseEntry {
     private int mInputType = 1;  // Manual, GPS or automatic
     private String mActivityType = "Running";     // Running, cycling etc.
     private String mDateTime;    // When does this entry happen
-    private int mDuration = 100;         // Exercise duration in seconds
-    private float mDistance = 250;      // Distance traveled. Either in meters or feet.
-    private float mAvgPace = 25;       // Average pace
-    private float mAvgSpeed = 12;    // Average speed
-    private int mCalorie = 10;        // Calories burnt
-    private float mClimb = 314;         // Climb. Either in meters or feet.
-    private int mHeartRate = 120;       // Heart rate
+    private int mDuration = 0;         // Exercise duration in seconds
+    private float mDistance = 0;      // Distance traveled. Either in meters or feet.
+    private float mAvgPace = 0;       // Average pace
+    private float mAvgSpeed = 0;    // Average speed
+    private int mCalorie = 0;        // Calories burnt
+    private float mClimb = 0;         // Climb. Either in meters or feet.
+    private int mHeartRate = 0;       // Heart rate
     private String mComment = "hello world";       // Comments
     private String units = "metric";
     private String gpsData = "";

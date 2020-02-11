@@ -23,7 +23,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-
+                <Button
+                    android:id="@+id/deleteGPS"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="right"
+                    android:onClick="deleteGPSEntry"
+                    android:text="@string/Delete" />
                 <TextView
                     android:id="@+id/avgSpeed"
                     android:layout_width="match_parent"
@@ -76,7 +82,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/saveGPS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -84,7 +90,7 @@
             android:onClick="save"/>
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/cancelGPS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
