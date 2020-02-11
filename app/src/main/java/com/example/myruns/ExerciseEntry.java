@@ -8,7 +8,7 @@ public class ExerciseEntry {
     private String mActivityType = "Running";     // Running, cycling etc.
     private String mDateTime;    // When does this entry happen
     private int mDuration = 0;         // Exercise duration in seconds
-    private float mDistance = 0;      // Distance traveled. Either in meters or feet.
+    private double mDistance = 0;      // Distance traveled. Either in meters or feet.
     private float mAvgPace = 0;       // Average pace
     private float mAvgSpeed = 0;    // Average speed
     private int mCalorie = 0;        // Calories burnt
@@ -40,7 +40,7 @@ public class ExerciseEntry {
         return mDuration;
     }
 
-    public float getDistance() {
+    public double getDistance() {
         return mDistance;
     }
 
@@ -92,7 +92,7 @@ public class ExerciseEntry {
         this.mDuration = mDuration;
     }
 
-    public void setDistance(float mDistance) {
+    public void setDistance(double mDistance) {
         this.mDistance = mDistance;
     }
 

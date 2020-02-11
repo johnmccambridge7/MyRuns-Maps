@@ -92,29 +92,13 @@ public class EntryDataSource {
     public ExerciseEntry convertCursorToEntry(Cursor c) {
         ExerciseEntry e = new ExerciseEntry();
 
-        /*
-           "CREATE TABLE IF NOT EXISTS " + ENTRIES_TABLE + " (\n" +
-            "        " + PRIMARY_KEY + " INTEGER PRIMARY KEY AUTOINCREMENT, \n" +
-            "        " + INPUT_TYPE + " INTEGER NOT NULL, \n" +
-            "        " + ACTIVITY_TYPE + " INTEGER NOT NULL, \n" +
-            "        " + DATE_TIME + " DATETIME NOT NULL, \n" +
-            "        " + DURATION + " INTEGER NOT NULL, \n" +
-            "        " + DISTANCE + " REAL, \n" +
-            "        " + AVG_PACE + " REAL, \n" +
-            "        " + AVG_SPEED + " REAL,\n" +
-            "        " + CALORIES + " INTEGER, \n" +
-            "        " + CLIMB + " REAL, \n" +
-            "        " + HEARTRATE + " INTEGER, \n" +
-            "        " + COMMENT + " TEXT, \n" +
-            "        " + PRIVACY + " INTEGER,\n" +
-            "        " + GPS_DATA + " TEXT );";
-         */
+
         e.setId(c.getLong(0));
         e.setInputType(c.getInt(1));
         e.setActivityType(c.getString(2));
         e.setDateTime(c.getString(3));
         e.setDuration(c.getInt(4));
-        e.setDistance(c.getInt(5));
+        e.setDistance(c.getDouble(5));
         e.setAvgPace(c.getInt(6));
         e.setAvgSpeed(c.getFloat(7));
         e.setCalorie(c.getInt(8));
@@ -138,7 +122,7 @@ public class EntryDataSource {
         database.update(SQLiteHelper.ENTRIES_TABLE, values, null, null);
     }
 
-    public void updateEntryDistance(Long id, float distance) {
+    public void updateEntryDistance(Long id, double distance) {
         ContentValues values = new ContentValues();
         values.put(SQLiteHelper.DISTANCE, distance);
         database.update(SQLiteHelper.ENTRIES_TABLE, values, SQLiteHelper.PRIMARY_KEY + " = " + String.valueOf(id), null);

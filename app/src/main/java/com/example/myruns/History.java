@@ -39,6 +39,12 @@ public class History extends Fragment {
         this.database = new EntryDataSource(getActivity());
         this.database.open();
 
+        ArrayList<ExerciseEntry> entrys = this.database.getAllEntries();
+
+        for(ExerciseEntry e : entrys) {
+            Log.d("johnmacdonald", "output:" + e.toString());
+        }
+
         this.listAdapter = new HistoryListAdapter(getActivity(), this.entries);
 
         // database.deleteAllEntries();
@@ -111,17 +117,17 @@ public class History extends Fragment {
             @Override
             public void run() {
                 for(ExerciseEntry e : entries) {
-                    float distance = e.getDistance();
+                    double distance = e.getDistance();
 
                     if(!e.getUnits().equals(storedUnit)) {
                         // needs to be converted
-                        float d;
+                        double d;
                         if(e.getUnits().equals("imperial")) {
                             // miles to kilometers
-                            d = (1.609f * distance);
+                            d = (1.609 * distance);
                         } else {
                             // kilometers to miles
-                            d = (distance / 1.609f);
+                            d = (distance / 1.609);
                         }
 
                         e.setDistance(d);

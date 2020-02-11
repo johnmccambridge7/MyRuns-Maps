@@ -23,13 +23,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-                <Button
-                    android:id="@+id/deleteGPS"
-                    android:layout_width="100dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="right"
-                    android:onClick="deleteGPSEntry"
-                    android:text="@string/Delete" />
                 <TextView
                     android:id="@+id/avgSpeed"
                     android:layout_width="match_parent"
@@ -69,6 +62,14 @@
                     android:background="#99FFFFFF"
                     android:padding="10dp"
                     android:text="Climb: 0.09 miles" />
+                
+                <Button
+                    android:id="@+id/deleteGPS"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="right"
+                    android:onClick="deleteGPSEntry"
+                    android:text="@string/Delete" />
 
             </LinearLayout>
         </fragment>

@@ -69,11 +69,11 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     String activityTypeData = "None";
 
     private ArrayList<LatLng> polygon;
-    private ArrayList<LatLng> heights;
+    private ArrayList<Heights> heights;
     private ArrayList<Timestamps> timestamps;
 
-    private Double startingHeight;
-    private Float currentSpeedValue;
+    private double startingHeight;
+    private double currentSpeedValue;
     private double avgSpeedValue;
     private boolean runningStatic;
 
@@ -123,11 +123,8 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         this.runningStatic = !startService;
 
         if(this.runningStatic) {
-
             this.entryID = intentData.getString("entryID");
             this.position = intentData.getInt("position", 0);
-
-            message(this.entryID);
 
             delete.setVisibility(View.VISIBLE);
             save.setVisibility(View.INVISIBLE);
@@ -140,12 +137,12 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
 
         //locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         polygon = new ArrayList<LatLng>();
-        heights = new ArrayList<LatLng>();
+        heights = new ArrayList<Heights>();
         timestamps = new ArrayList<Timestamps>();
 
         locationReceiver = new LocationReceiver();
 
-        currentSpeedValue = 0.0f;
+        currentSpeedValue = 0.0;
         currentCoord = new LatLng(0,0);
         startingCoord = new LatLng(0, 0);
         startingHeight = 0.0;
@@ -168,6 +165,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         if(savedInstanceState != null) {
             polygon = savedInstanceState.getParcelableArrayList("points");
             heights = savedInstanceState.getParcelableArrayList("heights");
+            timestamps = savedInstanceState.getParcelableArrayList("times");
 
             double lat = savedInstanceState.getDouble("lat", 0.0);
             double lng = savedInstanceState.getDouble("long", 0.0);
@@ -192,7 +190,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             String avgSpeedData = "Avg Speed: " + String.valueOf(avgSpeedValue) + " m/h";
             avgSpeed.setText(avgSpeedData);
 
-            currentSpeedValue = savedInstanceState.getFloat("currentSpeed");
+            currentSpeedValue = savedInstanceState.getDouble("currentSpeed");
             String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue) + " m/h";
             currentSpeed.setText(currentSpeedData);
         }
@@ -210,7 +208,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         bundle.putDouble("startingHeight", startingHeight);
         bundle.putString("activity", activityTypeData);
         bundle.putString("units", units);
-        bundle.putFloat("currentSpeed", currentSpeedValue);
+        bundle.putDouble("currentSpeed", currentSpeedValue);
         bundle.putDouble("averageSpeed", avgSpeedValue);
     }
 
@@ -242,16 +240,14 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
                         } else {
                             formattedDistance = (float) distanceInMeters / 1000f;
                         }
-                        // 1 meter = 0.000621 miles
 
+                        // 1 meter = 0.000621 miles
                         entry.setInputType(2);
                         entry.setDateTime(formatter.format(date));
                         entry.setActivityType(activityTypeData);
                         entry.setDuration(duration);
                         entry.setDistance(formattedDistance);
                         //entry.setCalorie(Integer.valueOf(config.get("Calories")));
-                        //entry.setHeartRate(Integer.valueOf(config.get("Heart Rate")));
-                        // get the stored unit - default metric
                         entry.setGpsData(gpsData);
                         entry.setUnits(units);
 
@@ -330,9 +326,13 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     public double getTotalClimb(double startingHeight) {
         double netHeight = 0.0;
 
-        for(LatLng data : heights) {
-            double height = data.latitude;
+        Log.d("johnmacdonald", "starting alt: " + startingHeight);
+
+        for(Heights data : heights) {
+            double height = data.getHeight();
             double delta = (height - startingHeight);
+
+            Log.d("johnmacdonald", String.valueOf(delta));
 
             if(delta > 0) {
                 netHeight += delta;
@@ -384,18 +384,15 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             String gpsData = intentData.getString("gpsData");
 
             float formattedDistance = 0.0f;
-            float dist = intentData.getFloat("distance");
+            double dist = intentData.getDouble("distance");
 
             String suffix = "kilometers";
 
             if(units.equals("imperial")) {
-                formattedDistance = (float) dist / 1609f;
                 suffix = "miles";
-            } else {
-                formattedDistance = (float) dist / 1000f;
             }
 
-            String distString = "Distance: " + String.valueOf(formattedDistance) + " " + suffix;
+            String distString = "Distance: " + String.valueOf(dist) + " " + suffix;
             distance.setText(distString);
 
             String altString = "Climb: " + String.valueOf(intentData.get("climb")) + " " + suffix;
@@ -443,24 +440,26 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         if (currentPin != null)
             currentPin.remove();
 
-        PolylineOptions polylineCoords = new PolylineOptions();
-
-        for(LatLng point : polygon) {
-            polylineCoords.add(point);
-        }
-
-        mMap.addPolyline(polylineCoords);
-
-        if(runningStatic) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polygon.get(0), 100));
-        }
-
         if(currentCoord.latitude == 0 && currentCoord.longitude == 0) {
             return;
         }
 
-        startingPin = addMarker(startingCoord, true);
-        currentPin = addMarker(currentCoord, false);
+        if(mMap != null) {
+            PolylineOptions polylineCoords = new PolylineOptions();
+
+            for(LatLng point : polygon) {
+                polylineCoords.add(point);
+            }
+
+            mMap.addPolyline(polylineCoords);
+
+            if(runningStatic) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(polygon.get(0), 100));
+            }
+
+            startingPin = addMarker(startingCoord, true);
+            currentPin = addMarker(currentCoord, false);
+        }
     }
 
     public class LocationReceiver extends BroadcastReceiver {
@@ -469,16 +468,16 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             double lng = intent.getExtras().getDouble("long", -10.0);
             double lat = intent.getExtras().getDouble("lat", -10.0);
 
-            currentSpeedValue = intent.getExtras().getFloat("speed");
+            currentSpeedValue = getCurrentSpeed();
             double altitude = intent.getExtras().getDouble("altitude");
 
             currentCoord = new LatLng(lat, lng);
 
-            if(startingHeight == null) {
+            if(startingHeight == 0.0) {
                 startingHeight = altitude;
             }
 
-            heights.add(new LatLng(altitude, 0));
+            heights.add(new Heights(altitude));
 
             Timestamps stamp = new Timestamps(System.currentTimeMillis());
 
@@ -500,7 +499,9 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue) + " m/h";
             currentSpeed.setText(currentSpeedData);
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentCoord, 100));
+            if(mMap != null && currentCoord != null) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentCoord, 100));
+            }
 
             if(startingCoord.latitude == 0 && startingCoord.longitude == 0) {
                 startingCoord = new LatLng(lat, lng);
@@ -515,6 +516,31 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         if(this.timestamps.size() > 1) {
             double startTime = this.timestamps.get(0).getStamp();
             double endTime = this.timestamps.get(this.timestamps.size() - 1).getStamp();
+
+            double deltaSeconds = (endTime - startTime) / 1000f;
+
+            if(deltaSeconds == 0) {
+                return 0.0;
+            }
+
+            return distance / deltaSeconds;
+        }
+
+        return 0.0;
+    }
+
+    // returns avg speed in meters per second
+    public double getCurrentSpeed() {
+        if(this.timestamps.size() > 1) {
+            double startTime = this.timestamps.get(this.timestamps.size() - 2).getStamp();
+            double endTime = this.timestamps.get(this.timestamps.size() - 1).getStamp();
+
+            LatLng previousCoord = this.polygon.get(this.polygon.size() - 2);
+
+            float[] results = new float[3];
+            Location.distanceBetween(currentCoord.latitude, currentCoord.longitude, previousCoord.latitude, previousCoord.longitude, results);
+
+            double distance = results[0];
 
             double deltaSeconds = (endTime - startTime) / 1000f;
 
