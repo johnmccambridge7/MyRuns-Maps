@@ -39,7 +39,13 @@ public class HistoryListAdapter extends ArrayAdapter<ExerciseEntry> {
             unit = " miles ";
         }
 
-        txtTitle.setText("Manual Entry: " + entry.getActivityType() + ", " + entry.getDateTime());
+        String entryType = "Manual Entry";
+
+        if(entry.getInputType() == 2) {
+            entryType = "GPS";
+        }
+
+        txtTitle.setText(entryType + ": " + entry.getActivityType() + ", " + entry.getDateTime());
         subTitle.setText(String.valueOf(entry.getDistance()) + unit + String.valueOf(entry.getDuration()) + " mins and 0 secs");
 
         return rowView;

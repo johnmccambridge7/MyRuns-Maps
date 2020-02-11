@@ -16,6 +16,7 @@ public class ExerciseEntry {
     private int mHeartRate = 120;       // Heart rate
     private String mComment = "hello world";       // Comments
     private String units = "metric";
+    private String gpsData = "";
     //private ArrayList<LatLng> mLocationList; // Location list
     public String getUnits() { return this.units; }
 
@@ -131,5 +132,13 @@ public class ExerciseEntry {
                 "climb: " + String.valueOf(this.getClimb()) +
                 "heart: " + String.valueOf(this.getHeartRate()) +
                 "comment: " + this.getComment();
+    }
+
+    public String getGpsData() {
+        return gpsData;
+    }
+
+    public void setGpsData(String gpsData) {
+        this.gpsData = gpsData;
     }
 }

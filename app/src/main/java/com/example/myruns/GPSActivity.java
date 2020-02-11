@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -33,7 +34,9 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.json.JSONException;
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 // todo:
 // 1. add background support. - DONE
@@ -71,6 +74,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     private double avgSpeedValue;
 
     private LocationReceiver locationReceiver;
+    EntryDataSource database;
 
     TextView avgSpeed;
     TextView currentSpeed;
@@ -88,6 +92,9 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         distance = (TextView) findViewById(R.id.distance);
         activityType = (TextView) findViewById(R.id.activityType);
         climb = (TextView) findViewById(R.id.climb);
+
+        this.database = new EntryDataSource(this);
+        this.database.open();
 
         Bundle intentData = getIntent().getExtras();
         this.units = intentData.getString("units");
@@ -169,12 +176,68 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         // stop the background service
         // use thread to write to the database
         // convert latlong to byte array and vice versa
+        if(timestamps.size() > 0) {
+            try {
+                String gpsData = DataConversion.toJSON(polygon);
+                Log.d("johnmacdonald", "Saving gps data as: " + gpsData);
 
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // insert new record into database
+                        final ExerciseEntry entry = new ExerciseEntry();
 
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        Date date = new Date();
 
-        Intent i = new Intent();
-        i.setAction(LocationService.STOP_SERVICE_ACTION);
-        sendBroadcast(i);
+                        int duration = (int) (timestamps.get(timestamps.size() - 1).getStamp() - timestamps.get(0).getStamp());
+                        duration = duration / 1000;
+
+                        float formattedDistance = 0.0f;
+                        double distanceInMeters = getDistanceTravelled();
+
+                        if(units.equals("Imperial")) {
+                            formattedDistance = (float) distanceInMeters / 1609f;
+                        } else {
+                            formattedDistance = (float) distanceInMeters / 1000f;
+                        }
+                        // 1 meter = 0.000621 miles
+
+                        entry.setInputType(2);
+                        entry.setDateTime(formatter.format(date));
+                        entry.setActivityType(activityTypeData);
+                        entry.setDuration(duration);
+                        entry.setDistance(formattedDistance);
+                        //entry.setCalorie(Integer.valueOf(config.get("Calories")));
+                        //entry.setHeartRate(Integer.valueOf(config.get("Heart Rate")));
+                        // get the stored unit - default metric
+                        entry.setUnits(units);
+
+                        final ExerciseEntry inserted = database.createEntry(entry);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                History.entries.add(inserted);
+                                History.listAdapter.notifyDataSetChanged();
+                                Toast.makeText(getApplicationContext(), "New Entry Success!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                        finish();
+                    }
+                }).start();
+
+                //Log.d("johnmacdonald", "#2: " + DataConversion.toArrayList(s));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Intent i = new Intent();
+            i.setAction(LocationService.STOP_SERVICE_ACTION);
+            sendBroadcast(i);
+            finish();
+        }
     }
 
     public void cancel(View view) {
@@ -272,14 +335,6 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
 
         for(LatLng point : polygon) {
             polylineCoords.add(point);
-        }
-
-        try {
-            String s = DataConversion.toJSON(polygon);
-            Log.d("johnmacdonald", "#: " + s);
-            Log.d("johnmacdonald", "#2: " + DataConversion.toArrayList(s));
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
 
         mMap.addPolyline(polylineCoords);

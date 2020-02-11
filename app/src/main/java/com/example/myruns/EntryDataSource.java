@@ -70,7 +70,7 @@ public class EntryDataSource {
         values.put(SQLiteHelper.HEARTRATE, entry.getHeartRate());
         values.put(SQLiteHelper.COMMENT, entry.getComment());
         values.put(SQLiteHelper.PRIVACY, 1);
-        values.put(SQLiteHelper.GPS_DATA, "example GPS data");
+        values.put(SQLiteHelper.GPS_DATA, entry.getGpsData());
         values.put(SQLiteHelper.UNITS, entry.getUnits());
 
         long recordID = database.insert(SQLiteHelper.ENTRIES_TABLE, null, values);
@@ -107,7 +107,7 @@ public class EntryDataSource {
             "        " + HEARTRATE + " INTEGER, \n" +
             "        " + COMMENT + " TEXT, \n" +
             "        " + PRIVACY + " INTEGER,\n" +
-            "        " + GPS_DATA + " BLOB );";
+            "        " + GPS_DATA + " TEXT );";
          */
         e.setId(c.getLong(0));
         e.setInputType(c.getInt(1));
@@ -121,6 +121,7 @@ public class EntryDataSource {
         e.setClimb(c.getFloat(9));
         e.setHeartRate(c.getInt(10));
         e.setComment(c.getString(11));
+        e.setGpsData(c.getString(13));
         e.setUnits(c.getString(14));
 
         return e;

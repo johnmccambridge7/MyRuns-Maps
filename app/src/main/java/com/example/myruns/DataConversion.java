@@ -37,7 +37,7 @@ public class DataConversion {
         while(keys.hasNext()) {
             String key = keys.next();
             JSONObject coord = (JSONObject) obj.get(key);
-            
+
             LatLng c = new LatLng(coord.getDouble("lat"), coord.getDouble("lng"));
             coords.add(c);
         }

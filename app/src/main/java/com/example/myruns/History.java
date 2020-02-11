@@ -69,7 +69,13 @@ public class History extends Fragment {
                 Intent intent = new Intent(getActivity(), HistoryEntryActivity.class);
                 ExerciseEntry entry = entries.get(i);
 
-                intent.putExtra("inputType", "Manual Entry");
+                String entryType = "Manual Entry";
+
+                if(entry.getInputType() == 2) {
+                    entryType = "GPS";
+                }
+
+                intent.putExtra("inputType", entryType);
                 intent.putExtra("activityType", entry.getActivityType());
                 intent.putExtra("date", entry.getDateTime());
                 intent.putExtra("duration", String.valueOf(entry.getDuration()) + " mins and 0 secs");
