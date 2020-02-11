@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONException;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -271,6 +272,14 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
 
         for(LatLng point : polygon) {
             polylineCoords.add(point);
+        }
+
+        try {
+            String s = DataConversion.toJSON(polygon);
+            Log.d("johnmacdonald", "#: " + s);
+            Log.d("johnmacdonald", "#2: " + DataConversion.toArrayList(s));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         mMap.addPolyline(polylineCoords);

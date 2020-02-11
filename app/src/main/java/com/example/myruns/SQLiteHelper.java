@@ -25,7 +25,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String UNITS = "units";
 
     private static final String DATABASE_NAME = "entries.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String DB_CREATION =
                      "CREATE TABLE IF NOT EXISTS " + ENTRIES_TABLE + " (\n" +
@@ -42,7 +42,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             "        " + HEARTRATE + " INTEGER, \n" +
             "        " + COMMENT + " TEXT, \n" +
             "        " + PRIVACY + " INTEGER,\n" +
-            "        " + GPS_DATA + " BLOB,\n " +
+            "        " + GPS_DATA + " TEXT,\n " +
             "        " + UNITS + " TEXT);";
 
     public SQLiteHelper(Context context) {
