@@ -56,13 +56,21 @@
                     android:text="Type: Running" />
 
                 <TextView
+                    android:id="@+id/calories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#99FFFFFF"
+                    android:padding="10dp"
+                    android:text="Calories: 0" />
+
+                <TextView
                     android:id="@+id/climb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#99FFFFFF"
                     android:padding="10dp"
                     android:text="Climb: 0.09 miles" />
-                
+
                 <Button
                     android:id="@+id/deleteGPS"
                     android:layout_width="100dp"

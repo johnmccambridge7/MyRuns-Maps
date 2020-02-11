@@ -43,7 +43,7 @@ import java.util.Date;
 
 // todo:
 // 1. add background support. - DONE
-// 2. write information to database.
+// 2. write information to database. - DONE
 // 3. model to draw speed and other metrics etc. (make sure to use preferences) - DONE
 // est time 6 hours
 
@@ -75,6 +75,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     private double startingHeight;
     private double currentSpeedValue;
     private double avgSpeedValue;
+    private int caloriesBurnt;
     private boolean runningStatic;
 
     private LocationReceiver locationReceiver;
@@ -85,6 +86,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
     TextView distance;
     TextView activityType;
     TextView climb;
+    TextView calories;
 
     Button save;
     Button cancel;
@@ -103,6 +105,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         distance = (TextView) findViewById(R.id.distance);
         activityType = (TextView) findViewById(R.id.activityType);
         climb = (TextView) findViewById(R.id.climb);
+        calories = (TextView) findViewById(R.id.calories);
         delete = (Button) findViewById(R.id.deleteGPS);
 
         save = (Button) findViewById(R.id.saveGPS);
@@ -146,6 +149,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         currentCoord = new LatLng(0,0);
         startingCoord = new LatLng(0, 0);
         startingHeight = 0.0;
+        caloriesBurnt = 0;
 
         // SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -205,6 +209,11 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             currentSpeedValue = savedInstanceState.getDouble("currentSpeed");
             String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue / 60) + " " + suffix + "/h";
             currentSpeed.setText(currentSpeedData);
+
+            caloriesBurnt = savedInstanceState.getInt("caloriesBurnt");
+            String calorieString = "Calories: " + String.valueOf(caloriesBurnt) + " cals";
+            calories.setText(calorieString);
+
         }
     }
 
@@ -222,6 +231,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         bundle.putString("units", units);
         bundle.putDouble("currentSpeed", currentSpeedValue);
         bundle.putDouble("averageSpeed", avgSpeedValue);
+        bundle.putInt("caloriesBurnt", caloriesBurnt);
     }
 
     public void save(View view) {
@@ -259,7 +269,7 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
                         entry.setActivityType(activityTypeData);
                         entry.setDuration(duration);
                         entry.setDistance(formattedDistance);
-                        //entry.setCalorie(Integer.valueOf(config.get("Calories")));
+                        entry.setCalorie(caloriesBurnt);
                         entry.setGpsData(gpsData);
                         entry.setUnits(units);
 
@@ -335,16 +345,17 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
         return mMap.addMarker(options);
     }
 
+    // Calories burned per minute = (0.035 * body weight in kg) + ((Velocity in m/s ^ 2) / Height in m)) * (0.029) * (body weight in kg)
+    public double getCaloriesBurnt(int weight, int height, double velocity) {
+        return (0.035 * weight) + ((velocity * velocity) / height) * (0.029 * weight);
+    }
+
     public double getTotalClimb(double startingHeight) {
         double netHeight = 0.0;
-
-        Log.d("johnmacdonald", "starting alt: " + startingHeight);
 
         for(Heights data : heights) {
             double height = data.getHeight();
             double delta = (height - startingHeight);
-
-            Log.d("johnmacdonald", String.valueOf(delta));
 
             if(delta > 0) {
                 netHeight += delta;
@@ -477,7 +488,6 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             double lng = intent.getExtras().getDouble("long", -10.0);
             double lat = intent.getExtras().getDouble("lat", -10.0);
 
-            currentSpeedValue = getCurrentSpeed();
             double altitude = intent.getExtras().getDouble("altitude");
 
             currentCoord = new LatLng(lat, lng);
@@ -493,8 +503,11 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             timestamps.add(stamp);
             polygon.add(currentCoord);
 
+            currentSpeedValue = getCurrentSpeed();
             double distanceClimbed = getTotalClimb(startingHeight); // in meters
             double distanceTravelled = getDistanceTravelled(); // in meters
+            caloriesBurnt = (int) getCaloriesBurnt(100, 2, currentSpeedValue);
+            avgSpeedValue = getAvgSpeed(distanceTravelled);
 
             String suffix = "kilometers";
 
@@ -513,12 +526,14 @@ public class GPSActivity extends FragmentActivity implements OnMapReadyCallback 
             String distString = "Distance: " + String.valueOf(distanceTravelled) + " " + suffix;
             distance.setText(distString);
 
-            avgSpeedValue = getAvgSpeed(distanceTravelled);
             String avgSpeedData = "Avg Speed: " + String.valueOf(avgSpeedValue / 60) + " " + suffix + "/h";
             avgSpeed.setText(avgSpeedData);
 
             String currentSpeedData = "Curr. Speed: " + String.valueOf(currentSpeedValue / 60) + " " + suffix + "/h";
             currentSpeed.setText(currentSpeedData);
+
+            String calorieString = "Calories: " + String.valueOf(caloriesBurnt) + " cals";
+            calories.setText(calorieString);
 
             if(mMap != null && currentCoord != null) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentCoord, 100));
